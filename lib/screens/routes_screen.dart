@@ -6,22 +6,38 @@ class RoutesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
+    final routes = [
+      {
+        'name': 'Central High School Shelter',
+        'address': '123 Shelter Rd, Baltimore, MD',
+        'status': 'Open – 150/300 capacity',
+        'mapsUrl':
+            'https://www.google.com/maps/search/?api=1&query=Central+High+School+Baltimore'
+      },
+      {
+        'name': 'Community Recreation Center',
+        'address': '456 Safe St, Baltimore, MD',
+        'status': 'Open – Pet friendly',
+        'mapsUrl':
+            'https://www.google.com/maps/search/?api=1&query=Community+Recreation+Center+Baltimore'
+      },
+    ];
+
+    return ListView.builder(
       padding: const EdgeInsets.all(16),
-      children: [
-        Card(
+      itemCount: routes.length,
+      itemBuilder: (context, index) {
+        final r = routes[index];
+        return Card(
+          margin: const EdgeInsets.only(bottom: 12),
           child: ListTile(
-            title: const Text("Central High School Shelter"),
-            subtitle: const Text("Open evacuation route"),
+            title: Text(r['name']!),
+            subtitle: Text('${r['address']} • ${r['status']}'),
             trailing: const Icon(Icons.directions),
-            onTap: () {
-              launchUrlString(
-                "https://www.google.com/maps/search/central+high+school+baltimore",
-              );
-            },
+            onTap: () => launchUrlString(r['mapsUrl']!),
           ),
-        ),
-      ],
+        );
+      },
     );
   }
 }
