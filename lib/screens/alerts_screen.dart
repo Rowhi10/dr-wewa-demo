@@ -1,159 +1,45 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-
-import 'package:dr_wewa/data/sample_alerts.dart';
-import 'package:dr_wewa/models/emergency_alert.dart';
 
 class AlertsScreen extends StatelessWidget {
   const AlertsScreen({super.key});
 
-  Color _severityColor(String severity) {
-    switch (severity) {
-      case 'Emergency':
-        return Colors.red.shade700;
-      case 'Warning':
-        return Colors.orange.shade700;
-      case 'Watch':
-        return Colors.amber.shade700;
-      default:
-        return Colors.blueGrey.shade600;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    final hasCritical =
-        sampleAlerts.any((alert) => alert.isCritical); // emergency mode flag
+    final alerts = [
+      {
+        "title": "Tornado Warning",
+        "location": "Baltimore, MD",
+        "details": "Seek shelter immediately indoors."
+      },
+      {
+        "title": "Flash Flood Alert",
+        "location": "Anne Arundel County, MD",
+        "details": "Avoid driving through flooded roads."
+      },
+    ];
 
-    return Column(
-      children: [
-        if (hasCritical)
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(12),
-            color: Colors.red.shade900,
-            child: Row(
-              children: const [
-                Icon(Icons.warning_amber_rounded, color: Colors.white, size: 32),
-                SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    'EMERGENCY ACTIVE IN YOUR AREA\nFollow official instructions immediately.',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        Expanded(
-          child: ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: sampleAlerts.length,
-            itemBuilder: (context, index) {
-              final alert = sampleAlerts[index];
-              final color = _severityColor(alert.severity);
-              final timeString =
-                  DateFormat('h:mm a').format(alert.time); // 3:45 PM
-
-              return Card(
-                margin: const EdgeInsets.only(bottom: 12),
-                child: ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: color,
-                    child: const Icon(Icons.warning, color: Colors.white),
-                  ),
-                  title: Text(alert.title),
-                  subtitle: Text('${alert.location} • $timeString'),
-                  trailing: Text(
-                    alert.severity.toUpperCase(),
-                    style: TextStyle(
-                      color: color,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  onTap: () {
-                    showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.vertical(top: Radius.circular(16)),
-                      ),
-                      builder: (_) => _AlertDetailSheet(alert: alert),
-                    );
-                  },
+    return ListView.builder(
+      itemCount: alerts.length,
+      itemBuilder: (context, index) {
+        final alert = alerts[index];
+        return Card(
+          color: Colors.red.shade100,
+          child: ListTile(
+            title: Text(alert["title"]!),
+            subtitle: Text(alert["location"]!),
+            trailing: const Icon(Icons.warning),
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (_) => AlertDialog(
+                  title: Text(alert["title"]!),
+                  content: Text(alert["details"]!),
                 ),
               );
             },
           ),
-        ),
-      ],
-    );
-  }
-}
-
-class _AlertDetailSheet extends StatelessWidget {
-  final EmergencyAlert alert;
-
-  const _AlertDetailSheet({required this.alert});
-
-  @override
-  Widget build(BuildContext context) {
-    final color = Colors.red.shade700;
-
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.warning_amber_rounded, color: color, size: 28),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  alert.title,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            alert.location,
-            style: TextStyle(color: Colors.grey.shade700),
-          ),
-          const SizedBox(height: 16),
-          const Text(
-            'Details',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 4),
-          Text(alert.description),
-          const SizedBox(height: 16),
-          const Text(
-            'Recommended Action',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 4),
-          Text(alert.recommendedAction),
-          const SizedBox(height: 16),
-          Align(
-            alignment: Alignment.centerRight,
-            child: TextButton(
-              child: const Text('Close'),
-              onPressed: () => Navigator.pop(context),
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
